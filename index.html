@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PokeIdleWorld — Breed Calculator</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1020;--panel:#141c30;--panel2:#1b2740;--line:#2b3854;--text:#edf2ff;--muted:#9eacc8;--accent:#8b9cff;--green:#63d6a2;--yellow:#ffd479;--red:#ff9292}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#1c2850 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:1050px;margin:36px auto;padding:0 18px 48px}.header{margin-bottom:24px}.eyebrow{color:var(--accent);font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.header h1{font-size:clamp(27px,5vw,40px);line-height:1.1;margin:8px 0}.header p{color:var(--muted);margin:8px 0 0;max-width:720px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px}.card{background:linear-gradient(160deg,rgba(27,39,64,.97),rgba(18,26,44,.98));border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 12px 35px #0003}.card h2{font-size:17px;margin:0 0 16px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label,.small-label{font-size:12px;color:var(--muted);font-weight:650}.field input,.field select,.stone-row input,.stone-row select{width:100%;background:#0e1628;border:1px solid #34425f;border-radius:9px;color:var(--text);padding:11px 12px;font:inherit;min-width:0;outline:none}.field input:focus,.field select:focus,.stone-row input:focus,.stone-row select:focus{border-color:var(--accent);box-shadow:0 0 0 3px #8b9cff22}.hint{font-size:11px;color:var(--muted);margin-top:4px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 10px}.section-head h3{font-size:14px;margin:0}.btn{border:1px solid #485a83;background:#263657;color:var(--text);border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer}.btn:hover{filter:brightness(1.15)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#10172c;padding:12px 18px}.btn.remove{padding:5px 9px;color:#ffaaaa;background:#392333;border-color:#684052}.stone-list{display:flex;flex-direction:column;gap:8px}.stone-row{display:grid;grid-template-columns:1fr 82px 1fr 105px 34px;gap:7px;align-items:center}.stone-row .stone-name{font-weight:700;font-size:13px}.stone-row input,.stone-row select{padding:9px 8px;font-size:13px}.stone-row .unit{font-size:11px;color:var(--muted)}.toggle-line{display:flex;align-items:center;gap:10px;margin-top:16px;padding:12px;background:#0e1628;border:1px solid var(--line);border-radius:10px}.toggle-line input{width:18px;height:18px;accent-color:var(--accent)}.toggle-line label{font-weight:700}.subpanel{margin-top:12px;padding:14px;background:#10192c;border:1px solid var(--line);border-radius:11px}.actions{display:flex;gap:10px;align-items:center;margin-top:18px}.actions .btn{flex:1}.results{margin-top:18px;display:none}.results.show{display:block}.results h2{margin:0 0 12px}.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.result-card{background:#10192c;border:1px solid var(--line);border-radius:13px;padding:16px}.result-card h3{margin:0 0 4px;font-size:15px}.big{font-size:clamp(25px,4vw,34px);font-weight:850;letter-spacing:-.04em;margin:8px 0 0}.secondary{color:var(--muted);font-size:13px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.stat{padding:9px;background:#1a2740;border-radius:8px}.stat b{display:block;font-size:16px}.stat span{font-size:11px;color:var(--muted)}.note{color:var(--muted);font-size:12px;margin:12px 2px 0}.error{display:none;color:var(--red);margin-top:10px;font-size:13px}.footer{color:#7786a4;font-size:11px;text-align:center;margin-top:22px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.result-grid{grid-template-columns:1fr}.stone-row{grid-template-columns:1fr 70px 1fr 90px 30px}.card{padding:16px}main{margin-top:24px}}
+@media(max-width:430px){.stone-row{grid-template-columns:1fr 66px 1fr 28px}.stone-row .unit{display:none}.stone-row select{grid-column:1/4}.stone-row .remove{grid-column:4;grid-row:1/3}.field-grid{gap:9px}}
+</style>
+</head>
+<body>
+<main>
+  <header class="header">
+    <div class="eyebrow">PokeIdleWorld · ferramenta comunitária</div>
+    <h1>Breed Quality Calculator</h1>
+    <p>Estime o custo médio para evoluir o IV atual até o IV desejado. O cálculo sempre compara breed normal e breed com 9 Pheromones.</p>
+  </header>
+
+  <div class="layout">
+    <section class="card">
+      <h2>01 · Objetivo do breed</h2>
+      <div class="field-grid">
+        <div class="field"><label for="current">IV atual</label><input id="current" type="number" min="0" step="0.001" placeholder="Ex.: 1.135"></div>
+        <div class="field"><label for="target">IV desejado</label><input id="target" type="number" min="0" step="0.001" placeholder="Ex.: 1.800"></div>
+      </div>
+      <div class="hint">O cálculo considera que você para assim que atingir ou ultrapassar o IV desejado.</div>
+
+      <div class="section-head"><h3>Stones por tentativa</h3><button class="btn" id="addStone" type="button">＋ Add stone</button></div>
+      <div class="stone-list" id="stones"></div>
+      <div class="hint">Informe a quantidade consumida e o preço unitário de cada tipo de Stone.</div>
+
+      <div class="subpanel">
+        <div class="field">
+          <label for="baseCost">Custo base por breed (DOL)</label>
+          <input id="baseCost" type="number" min="0" step="any" placeholder="Ex.: 2000000">
+        </div>
+        <div class="hint">Esse custo é aplicado em todas as tentativas, com ou sem Pheromone.</div>
+      </div>
+
+      <div class="subpanel" id="pheroPanel">
+        <h3 style="margin:0 0 10px;font-size:14px">Pheromones</h3>
+        <div class="field-grid">
+          <div class="field"><label for="pheroQty">Pheromones por breed</label><input id="pheroQty" type="number" min="0" step="1" placeholder="Ex.: 9"></div>
+          <div class="field"><label for="pheroPrice">Preço unitário do Pheromone</label><input id="pheroPrice" type="number" min="0" step="any" placeholder="Preço por unidade"></div>
+          <div class="field"><label for="pheroCurrency">Moeda do preço</label><select id="pheroCurrency"><option value="dol">DOL</option><option value="dia">Diamond</option></select></div>
+        </div>
+        <div class="hint">O custo dos Pheromones é aplicado em todas as tentativas do cenário com Pheromone. Informe a quantidade de Pheromones por tentativa (normalmente 9).</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>02 · Conversão de moeda</h2>
+      <div class="field-grid"><div class="field"><label for="diamondRate">1 Diamond vale (DOL)</label><input id="diamondRate" type="number" min="0.000001" step="any" placeholder="Ex.: 3000000"></div></div>
+      <div class="hint">Os valores são informados em DOL (valor cheio). Os resultados são abreviados em K (mil) e KK (milhão), tanto em DOL quanto em Diamonds.</div>
+      <div class="subpanel">
+        <h3 style="margin:0 0 8px;font-size:14px">Probabilidades utilizadas</h3>
+        <div class="secondary"><b>Normal</b>: 50% +0.005 · 35% +0.010 · 12% +0.020 · 3% +0.040</div>
+        <div class="secondary" style="margin-top:9px"><b>Com 9 Pheromones</b>: 50% +0.150 · 30% +0.200 · 15% +0.250 · 5% +0.300</div>
+      </div>
+      <div class="actions"><button class="btn primary" id="calculate" type="button">Calcular custo médio</button></div>
+      <div class="error" id="error"></div>
+      <p class="note">O cálculo usa valor esperado exato por programação dinâmica, incluindo a possibilidade de ultrapassar o IV destino no último breed. Não é apenas a divisão da distância pelo ganho médio.</p>
+    </section>
+  </div>
+
+  <section class="card results" id="results">
+    <h2>03 · Resultado estimado</h2>
+    <div class="result-grid">
+      <article class="result-card">
+        <h3>Breed normal</h3><div class="secondary">Sem Pheromone</div>
+        <div class="big" id="normalDol">—</div><div class="secondary" id="normalDia">—</div>
+        <div class="stats">
+          <div class="stat"><b id="normalAttempts">—</b><span>Breeds esperados</span></div>
+          <div class="stat"><b id="normalStones">—</b><span>Custo de Stones</span></div>
+        </div>
+      </article>
+      <article class="result-card" id="pheroResult">
+        <h3>Breed com Pheromone</h3><div class="secondary">Usando a quantidade configurada</div>
+        <div class="big" id="pheroDol">—</div><div class="secondary" id="pheroDia">—</div>
+        <div class="stats">
+          <div class="stat"><b id="pheroAttempts">—</b><span>Breeds esperados</span></div>
+          <div class="stat"><b id="pheroCost">—</b><span>Custo de Pheromones</span></div>
+        </div>
+      </article>
+    </div>
+    <p class="note" id="comparison"></p>
+  </section>
+  <div class="footer">Calculadora independente · valores estimados, não garantidos</div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let stoneId = 0;
+function addStone(name='', qty='', price='', currency='dol') {
+  const id = ++stoneId;
+  const row = document.createElement('div');
+  row.className = 'stone-row'; row.dataset.id = id;
+  row.innerHTML = `<div class="stone-name"><input aria-label="Nome da Stone" value="${name.replaceAll('"','&quot;')}" placeholder="Tipo de Stone"></div>
+    <input class="qty" aria-label="Quantidade" type="number" min="0" step="1" value="${qty}" placeholder="Quantidade">
+    <input class="price" aria-label="Preço unitário" type="number" min="0" step="any" value="${price}" placeholder="Preço">
+    <select class="currency" aria-label="Moeda"><option value="dol">DOL</option><option value="dia">Diamond</option></select>
+    <button class="btn remove" type="button" title="Remover Stone" aria-label="Remover Stone">×</button>`;
+  row.querySelector('.currency').value = currency;
+  row.querySelector('.remove').addEventListener('click', () => row.remove());
+  $('stones').appendChild(row);
+}
+addStone(); addStone();
+$('addStone').addEventListener('click', () => addStone());
+
+
+function expectedAttempts(distance, outcomes) {
+  // IV is represented in thousandths to avoid floating point drift.
+  const memo = new Map([[0,0]]);
+  function solve(rem) {
+    if (rem <= 0) return 0;
+    if (memo.has(rem)) return memo.get(rem);
+    let value = 1;
+    for (const [gain, probability] of outcomes) value += probability * solve(Math.max(0, rem-gain));
+    memo.set(rem,value);
+    return value;
+  }
+  return solve(distance);
+}
+const normalOutcomes = [[5,.50],[10,.35],[20,.12],[40,.03]];
+const pheroOutcomes = [[150,.50],[200,.30],[250,.15],[300,.05]];
+function fmt(n, digits=2) { return n.toLocaleString('pt-BR',{minimumFractionDigits:digits,maximumFractionDigits:digits}); }
+function formatK(dol) {
+  const abs = Math.abs(dol);
+  if (abs >= 1_000_000) return `${fmt(dol / 1_000_000)} KK`;
+  if (abs >= 1_000) return `${fmt(dol / 1_000)} K`;
+  return `${fmt(dol)} DOL`;
+}
+function showMoney(dol, rate) { return formatK(dol); }
+function calculate() {
+  $('error').style.display='none';
+  const requiredIds = ['current','target','diamondRate','baseCost','pheroQty','pheroPrice'];
+  if (requiredIds.some(id => $(id).value.trim() === '')) {
+    $('error').textContent='Preencha o IV atual, IV desejado, cotação do Diamond, custo base e os campos de Pheromone.';
+    $('error').style.display='block'; return;
+  }
+  const current = Number($('current').value), target = Number($('target').value);
+  const rate = Number($('diamondRate').value), base = Number($('baseCost').value);
+  if (![current,target,rate,base].every(Number.isFinite) || current < 0 || target <= current || rate <= 0 || base < 0) {
+    $('error').textContent='Confira os valores: o IV destino precisa ser maior que o IV atual e a cotação do Diamond deve ser maior que zero.';
+    $('error').style.display='block'; return;
+  }
+  const distance = Math.ceil((target-current)*1000 - 1e-8);
+  if (distance > 200000) { $('error').textContent='A diferença de IV é grande demais para este cálculo.'; $('error').style.display='block'; return; }
+  let stonesPerBreed=0;
+  for (const row of $('stones').children) {
+    const type = row.querySelector('.stone-name input').value.trim();
+    const qtyText = row.querySelector('.qty').value.trim();
+    const priceText = row.querySelector('.price').value.trim();
+    if (!type || qtyText === '' || priceText === '') {
+      $('error').textContent='Preencha o tipo, a quantidade e o preço de todas as Stones (ou remova a linha que não será usada).';
+      $('error').style.display='block'; return;
+    }
+    const qty=Number(qtyText), price=Number(priceText);
+    const currency=row.querySelector('.currency').value;
+    if (!Number.isFinite(qty)||!Number.isFinite(price)||qty<0||price<0) {
+      $('error').textContent='Confira as quantidades e os preços das Stones.'; $('error').style.display='block'; return;
+    }
+    stonesPerBreed += qty*price*(currency==='dia'?rate:1);
+  }
+  const normalN=expectedAttempts(distance,normalOutcomes);
+  const normalCost=normalN*(base+stonesPerBreed);
+  const pheroN=expectedAttempts(distance,pheroOutcomes);
+  const pQty=Number($('pheroQty').value), pPrice=Number($('pheroPrice').value);
+  if (!Number.isFinite(pQty)||!Number.isFinite(pPrice)||pQty<0||pPrice<0) {
+    $('error').textContent='Confira a quantidade e o preço dos Pheromones.'; $('error').style.display='block'; return;
+  }
+  const pUnit=$('pheroCurrency').value==='dia'?rate:1;
+  const pheroEach=pQty*pPrice*pUnit;
+  const pheroCost=pheroN*(base+stonesPerBreed+pheroEach);
+  $('normalDol').textContent=showMoney(normalCost);
+  $('normalDia').textContent=`≈ ${formatK(normalCost/rate)} em Diamonds`;
+  $('normalAttempts').textContent=fmt(normalN,2);
+  $('normalStones').textContent=`${formatK(normalN*stonesPerBreed)}`;
+  $('pheroDol').textContent=showMoney(pheroCost);
+  $('pheroDia').textContent=`≈ ${formatK(pheroCost/rate)} em Diamonds`;
+  $('pheroAttempts').textContent=fmt(pheroN,2);
+  $('pheroCost').textContent=`${formatK(pheroN*pheroEach)}`;
+  $('pheroResult').style.display='block';
+  $('comparison').textContent = pheroCost<normalCost
+    ? `Pheromone economiza aproximadamente ${fmt(normalCost-pheroCost)} DOL (${fmt((1-pheroCost/normalCost)*100)}%) em relação ao breed normal.`
+    : `Pheromone custa aproximadamente ${fmt(pheroCost-normalCost)} DOL a mais (${fmt(pheroCost/normalCost)}× o custo do breed normal).`;
+  $('results').classList.add('show');
+}
+$('calculate').addEventListener('click',calculate);
+</script>
+</body>
+</html>
